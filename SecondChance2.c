@@ -3,23 +3,23 @@
 #define MAX_FRAMES 3
 
 typedef struct {
-    int pageNumber;
-    int referenceBit;
+    int page_number;
+    int reference_bit;
 } Page;
 
 Page frames[MAX_FRAMES];
 
 void initialize_frames() {
     for (int i = 0; i < MAX_FRAMES; ++i) {
-        frames[i].pageNumber = -1;
-        frames[i].referenceBit = 0;
+        frames[i].page_number = -1;
+        frames[i].reference_bit = 0;
     }
 }
 
 void display_frames() {
     for (int i = 0; i < MAX_FRAMES; ++i) {
-        if (frames[i].pageNumber != -1) {
-            printf("{%d: (%d)} ", frames[i].pageNumber, frames[i].referenceBit);
+        if (frames[i].page_number != -1) {
+            printf("{%d: (%d)} ", frames[i].page_number, frames[i].reference_bit);
         } else {
             printf("- ");
         }
@@ -27,45 +27,35 @@ void display_frames() {
     printf("\n");
 }
 
-int is_page_in_frames(int pageNumber) {
+int is_page_in_frames(int page_number) {
     for (int i = 0; i < MAX_FRAMES; ++i) {
-        if (frames[i].pageNumber == pageNumber) {
+        if (frames[i].page_number == page_number) {
             return 1;
         }
     }
     return 0;
 }
 
-void second_chance(int pageNumber) {
+void second_chance(int page_number) {
     int i = 0;
     while (1) {
-        if (frames[i].pageNumber == -1) {
-            frames[i].pageNumber = pageNumber;
-            frames[i].referenceBit = 1;
-            return;
-        
-        } 
-        
-        {4 (0), 5 (0), -1 (0)}
-        
-    }
-
-    /*if (frames[i].referenceBit == 0) {
-            frames[i].pageNumber = pageNumber;
-            frames[i].referenceBit = 1;
+        if (frames[i].reference_bit == 0) {
+            frames[i].page_number = page_number;
+            frames[i].reference_bit = 1;
             return;
         } else {
-            frames[i].referenceBit = 0;
+            frames[i].reference_bit = 0;
         }
-        i = (i + 1) % MAX_FRAMES;*/
+        i = (i + 1) % MAX_FRAMES;
+    }
 }
 
-void replace_page(int pageNumber) {
-    if (is_page_in_frames(pageNumber)) {
-        printf("Page %d is already in memory.\n", pageNumber);
+void replace_page(int page_number) {
+    if (is_page_in_frames(page_number)) {
+        printf("Page %d is already in memory.\n", page_number);
     } else {
-        printf("Page %d is not in memory. Page replacement needed.\n", pageNumber);
-        second_chance(pageNumber);
+        printf("Page %d is not in memory. Page replacement needed.\n", page_number);
+        second_chance(page_number);
     }
 }
 
