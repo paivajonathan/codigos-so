@@ -57,7 +57,6 @@ void *escritor(void *arg) {
 
 int main() {
     pthread_t leitores[NUM_LEITORES], escritores[NUM_ESCRITORES];
-    int i;
 
     // Inicialização dos semáforos
     sem_init(&mutex, 0, 1);
@@ -65,22 +64,22 @@ int main() {
     sem_init(&escritores_sem, 0, 1);
 
     // Criação das threads de leitores
-    for (i = 0; i < NUM_LEITORES; i++) {
+    for (int i = 0; i < NUM_LEITORES; i++) {
         pthread_create(&leitores[i], NULL, leitor, (void *)&i);
     }
 
     // Criação das threads de escritores
-    for (i = 0; i < NUM_ESCRITORES; i++) {
+    for (int i = 0; i < NUM_ESCRITORES; i++) {
         pthread_create(&escritores[i], NULL, escritor, (void *)&i);
     }
 
     // Aguarda as threads de leitores terminarem
-    for (i = 0; i < NUM_LEITORES; i++) {
+    for (int i = 0; i < NUM_LEITORES; i++) {
         pthread_join(leitores[i], NULL);
     }
 
     // Aguarda as threads de escritores terminarem
-    for (i = 0; i < NUM_ESCRITORES; i++) {
+    for (int i = 0; i < NUM_ESCRITORES; i++) {
         pthread_join(escritores[i], NULL);
     }
 
