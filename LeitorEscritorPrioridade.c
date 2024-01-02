@@ -16,12 +16,12 @@ int leitores_ativos = 0;
 void *leitor(void *arg) {
     int identificador = *((int *)arg);
 
-
     // Início da seção crítica para leitores
     sem_wait(&leitores_sem);
     leitores_ativos++;
     if (leitores_ativos == 1) {
-        sem_wait(&escritores_sem); // Bloqueia escritores enquanto leitores ativos
+        // Bloqueia escritores enquanto leitores ativos
+        sem_wait(&escritores_sem);
     }
     sem_post(&leitores_sem);
     // Fim da seção crítica para leitores
