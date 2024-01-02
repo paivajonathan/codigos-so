@@ -18,8 +18,7 @@ void initialize_fat() {
     srand((unsigned int)time(NULL));
 
     // Inicializando a tabela FAT com uma cadeia contínua de clusters
-    int i;
-    for (i = 0; i < MAX_CLUSTERS - 1; i++) {
+    for (int i = 0; i < MAX_CLUSTERS - 1; i++) {
         fat[i].value = rand() % 100;  // Valor aleatório entre 0 e 99
         fat[i].next_cluster = i + 1;  // Próximo cluster na cadeia
     }
@@ -34,8 +33,7 @@ int main() {
 
     // Imprimindo a tabela FAT inicializada
     printf("Inicialização da tabela FAT:\n");
-    int i;
-    for (i = 0; i < MAX_CLUSTERS; i++) {
+    for (int i = 0; i < MAX_CLUSTERS; i++) {
         printf("Cluster %d: Valor: %d, Próximo Cluster: %d\n", i, fat[i].value, fat[i].next_cluster);
     }
     printf("\n");
