@@ -1,68 +1,99 @@
 #include <stdio.h>
+#include <stdbool.h>
 
-#define MAX_PAGES 10
+#define MAX_FRAMES 5
+int occupied_frames = 0;
+int page_faults = 0;
 
 typedef struct {
     int page_number;
-    int reference_bit;
+    bool reference_bit;  // Bit de referência para o algoritmo de segunda chance
 } Page;
 
-Page memory[MAX_PAGES];
+Page frames[MAX_FRAMES];
 
-void initialize_memory() {
-    for (int i = 0; i < MAX_PAGES; i++) {
-        memory[i].page_number = -1;  // Indica que a página não está ocupada
-        memory[i].reference_bit = 0; // Inicializa o bit de referência como 0
+// Inicializa os frames da memória
+void initialize_frames() {
+    for (int i = 0; i < MAX_FRAMES; i++) {
+        frames[i].page_number = -1;  // Página inválida inicialmente
+        frames[i].reference_bit = false;  // Inicia o bit de referência como false
     }
 }
 
-int second_chance() {
-    while (1) {
-        for (int i = 0; i < MAX_PAGES; i++) {
-            if (memory[i].page_number == -1 || memory[i].reference_bit == 0) {
-                return i; // Encontrou uma página para substituir
-            } else {
-                memory[i].reference_bit = 0; // Zera o bit de referência
-            }
-        }
-    }
-}
-
-void append_page(int page_number) {
-    int pageIndexToReplace = second_chance();
-    memory[pageIndexToReplace].page_number = page_number;
-}
-
-void print_memory() {
-    for (int i = 0; i < MAX_PAGES; i++) {
-        if (memory[i].page_number != -1) {
-            printf("Page %d (Ref: %d)\n", memory[i].page_number, memory[i].reference_bit);
+// Exibe o estado atual dos frames
+void display_frames() {
+    for (int i = 0; i < MAX_FRAMES; i++) {
+        if (frames[i].page_number != -1) {
+            printf("{%d: (%d)} ", frames[i].page_number, frames[i].reference_bit);
         } else {
-            printf("Empty\n");
+            printf("- ");
         }
     }
     printf("\n");
 }
 
-int main() {
-    initialize_memory();
+// Verifica se a página já está na memória
+bool is_page_in_frames(int page_number) {
+    for (int i = 0; i < MAX_FRAMES; i++) {
+        if (frames[i].page_number == page_number) {
+            frames[i].reference_bit = true;  // Marca a página como referenciada
+            return true;
+        }
+    }
+    return false;
+}
 
-    // Simula a referência a algumas páginas
-    append_page(10);
-    append_page(20);
-    // replace_page(2, 3);
+// Implementa o algoritmo de segunda chance para substituição de página
+void second_chance(int page_number) {
+    if (occupied_frames < MAX_FRAMES) {
+        for (int i = 0; i < MAX_FRAMES; i++) {
+            if (frames[i].page_number == -1) {
+                frames[i].page_number = page_number;
+                frames[i].reference_bit = false;  // Inicia o bit de referência como false
+                occupied_frames++;
+                return;
+            }
+        }
+    } else {
+        int i = 0;
+        while (true) {
+            if (!frames[i].reference_bit) {
+                frames[i].page_number = page_number;
+                frames[i].reference_bit = false;  // Inicia o bit de referência como false
+                return;
+            } else {
+                frames[i].reference_bit = false;
+            }
+            i = (i + 1) % MAX_FRAMES;  // Incrementa o índice circularmente
+        }
+    }
+}
 
-    // printf("Memória Inicial:\n");
-    // print_memory();
+// Substitui a página se necessário
+void replace_page(int page_number) {
+    if (is_page_in_frames(page_number)) {
+        printf("Page %d is already in memory.\n", page_number);
+    } else {
+        printf("Page %d is not in memory. Page replacement needed.\n", page_number);
+        second_chance(page_number);
+        page_faults++;
+    }
+}
 
-    // // Simula a necessidade de substituir uma página
-    // int pageIndexToReplace = second_chance();
-    // replace_page(pageIndexToReplace, 4);
+int main(void) {
+    initialize_frames();
 
-    // printf("Memória Após Substituição:\n");
-    // print_memory();
+    int pages[] = {2, 1, 4, 6, 2, 2, 1, 7};
+    int numPages = sizeof(pages) / sizeof(pages[0]);
 
-    print_memory();
+    for (int i = 0; i < numPages; i++) {
+        printf("Page request: %d\n", pages[i]);
+        replace_page(pages[i]);
+        display_frames();
+        printf("\n");
+    }
+
+    printf("Total page faults: %d\n", page_faults);
 
     return 0;
 }
