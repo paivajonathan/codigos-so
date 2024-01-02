@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#define MAX_FRAMES 3
+#define MAX_FRAMES 5
 int occupied_frames = 0;
 int page_faults = 0;
 
@@ -64,7 +64,7 @@ void second_chance(int page_number) {
             } else {
                 frames[i].reference_bit = false;
             }
-            i = (i + 1) % MAX_FRAMES;
+            i = (i + 1) % MAX_FRAMES;  // Incrementa o índice circularmente
         }
     }
 }
